@@ -8,26 +8,31 @@ var express 			 =require("express"),
 	passportlocal        =require("passport-local"),
 	passportlocalmongoose=require("passport-local-mongoose"),
 	session              =require("express-session"),
-	User 				 =require("./models/user")
+	User 				 =require("./models/user"),
+	methodoverride		 =require("method-override"),
+	flash 				 =require("connect-flash"),
 	app 				 =express()
 
 //requirinfg routes
-var commentRoutes	=require("./routes/comment"),
-	campgroundRoutes=require("./routes/campground"),
-	auth_indexRoutes=require("./routes/auth_index")
+var commentRoutes	 =require("./routes/comment"),
+	campgroundRoutes =require("./routes/campground"),
+	auth_indexRoutes =require("./routes/auth_index")
 
-seedDB();
+// seedDB();
 
 mongoose.connect("mongodb://localhost/yelpcamp",{useNewUrlParser:true})
 app.use(bodyparser.urlencoded({extended:true}))
 app.set("view engine","ejs")
 app.use(express.static(__dirname+"/public"));
+app.use(methodoverride("_method"))
+app.use(flash());
 
 app.use(session({
 	secret:"sourav",
 	resave:false,
 	saveUninitialized:false
 }))
+
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new passportlocal(User.authenticate()));
@@ -38,6 +43,8 @@ passport.deserializeUser(User.deserializeUser());
 //passing the value of currentuser to all the routes available
 app.use(function(req,res,next){
 	res.locals.currentUser=req.user;
+	res.locals.success=req.flash("success")
+	res.locals.error=req.flash("error")
 	next();
 })	
 

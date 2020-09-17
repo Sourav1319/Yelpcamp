@@ -1,4 +1,19 @@
 <%- include ('../partials/header')%>
+<style type="text/css">
+	#form{
+		display:inline;
+	}
+	/*.del:hover{
+		color:red;
+		background:white;
+	}*/
+	/*.ed:hover{
+		color:grey;
+		background:white;
+	}
+	*/
+
+</style>
 <div class="container">
 	<div class="row">
 		<div class="col-md-3">
@@ -16,6 +31,14 @@
 				<div class="caption">
 					<h4><span><a href=""><%=campground.name%></a></span><span class="float-right">$9.99 per Day</span></h4>
 					<p style="margin-top:12px"><%=campground.description%></p>
+					<p><em>Submitted by <%=campground.author.username%></em></p>
+					<%if(currentUser&&campground.author.id.equals(currentUser._id)){%>
+						<a href="/campgrounds/<%=campground._id%>/edit" type="button" class="btn btn-outline-secondary btn-sm ed">Edit</a>
+					<form id="form" action="/campgrounds/<%=campground._id%>?_method=DELETE" method="POST">
+						<button class="btn btn-outline-danger btn-sm del">Delete</button>
+					</form>
+					<%}%>
+				
 				</div>
 			</div>
 			<div class="card bg-light">
@@ -28,19 +51,22 @@
 
 					<div class="row">
 						<div class="col-md-12">
-							<strong><%=comments.author%></strong>
+							<strong><%=comments.author.username%></strong>
 							<span class="float-right">10 days ago</span>
 							<p>
 								<%=comments.text%>
 							</p>
+							<%if(currentUser&&comments.author.id.equals(currentUser._id)){%>
+								<a href="/campgrounds/<%=campground._id%>/comments/<%=comments._id%>/edit" class="btn btn-outline-secondary btn-sm ed">Edit</a>
+								<form id="form" action="/campgrounds/<%=campground._id%>/comments/<%=comments._id%>?_method=DELETE" method="POST">
+									<button class="btn btn-outline-danger btn-sm del">Delete</button>
+								</form>
+							<%}%>
 						</div>
 						
 					</div>
 					<%})%>
 				</div>
-				
-					
-				
 			</div>
 		</div>
 	</div>
